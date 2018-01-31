@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', ['uses' => 'ItemController@home', 'as' => 'item.home']);
+
+Route::resource('item', 'ItemController');
