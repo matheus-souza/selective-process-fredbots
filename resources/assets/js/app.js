@@ -17,6 +17,11 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
+import TableItems from './components/TableItems'
+
 const app = new Vue({
-    el: '#app'
+    el: '#content-view',
+    components: {
+        TableItems
+    }
 });
