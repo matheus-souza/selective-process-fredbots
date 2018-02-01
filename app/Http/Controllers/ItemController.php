@@ -58,7 +58,21 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         try {
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                if(substr($request->image->getMimeType(), 0, 5) != 'image')
+                    return redirect()->back()->with('error', 'Upload images only.');
+
+                $name = uniqid(date('HisYmd'));
+                $extension = $request->image->extension();
+                $nameFile = "{$name}.{$extension}";
+                $upload = $request->image->storeAs('items', $nameFile);
+
+                if (!$upload)
+                    return redirect()->back()->with('error', 'Failed to upload.');
+            }
+
             $item = new Item($request->all());
+            $item->image = $nameFile ?? null;
             $item->save();
 
             return redirect()->route('item.create')->with(['success' => 'Saved item successfully.']);
@@ -99,7 +113,25 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         try {
-            $item->update($request->all());
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                if(substr($request->image->getMimeType(), 0, 5) != 'image')
+                    return redirect()->back()->with('error', 'Upload images only.');
+
+                $name = uniqid(date('HisYmd'));
+                $extension = $request->image->extension();
+                $nameFile = "{$name}.{$extension}";
+                $upload = $request->image->storeAs('items', $nameFile);
+
+                if (!$upload)
+                    return redirect()->back()->with('error', 'Failed to upload.');
+            }
+
+            $input = $request->all();
+            $item->title = $input['title'] ?? $item->title;
+            $item->description = $input['description'] ?? $item->description;
+            $item->image = $input['image'] ?? $item->image;
+
+            $item->save();
 
             return redirect()->route('item.index')->with(['success' => 'Updated item successfully.']);
         } catch (\Exception $e) {

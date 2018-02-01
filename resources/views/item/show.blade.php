@@ -11,7 +11,9 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <img src="" />
+                    @if(strlen($item->image) > 0)
+                        <img src="{{ url("storage/items/{$item->image}") }}" />
+                    @endif
                 </div>
                 <div class="col">
                     <p>{{ $item->description }}</p>

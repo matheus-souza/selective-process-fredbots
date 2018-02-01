@@ -10,8 +10,11 @@
         <h1>Item Form</h1>
         @include('templates.form.message-alert')
 
-        {!! Form::model($item, ['route' => ['item.update', $item->id],'method' => 'PUT']) !!}
+        {!! Form::model($item, ['route' => ['item.update', $item->id],'method' => 'PUT', 'files' => true]) !!}
         @include('item.form-fields')
+        <div class="form-group col-md-6">
+            {!! Form::file('image'); !!}
+        </div>
         <div class="form-group col-md-6">
             @if($item->user->id == auth()->user()->id)
                 @include('templates.form.submit', ['input' => 'Save'])
