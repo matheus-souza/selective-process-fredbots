@@ -1,8 +1,12 @@
 <template>
     <div>
-        <div class="well">
-            <input type="text" class="form-control" placeholder="Search the list" v-model="filterTerm">
+        <div class="navbar justify-content-between">
+            <h1 class="navbar-brand">Items</h1>
+            <form class="form-inline">
+                <input type="text" class="form-control float-right" placeholder="Search the list" v-model="filterTerm" />
+            </form>
         </div>
+
         <table class="table table-hover">
             <thead>
             <tr>
@@ -14,19 +18,23 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="item in filteredAndOrderedItems">
+            <tr v-for="item in filteredAndOrderedItems"  @click="toggle(item)">
                 <th scope="row">{{ item.id }}</th>
                 <td>{{ item.title }}</td>
-                <td>{{ item.name }}</td>
+                <td>{{ item.user.name }}</td>
                 <td>{{ item.created_at }}</td>
                 <td class="btn-toolbar">
                     <div class="btn-group mr-2">
-                        <a class="btn btn-xs btn-warning">Editar</a>
+                        <a v-if="block_edit_list[item.id]" class="btn btn-xs btn-warning disabled" :href="url_edit_list[item.id]">Edit</a>
+                        <a v-else class="btn btn-xs btn-warning" :href="url_edit_list[item.id]">Edit</a>
                     </div>
                     <div class="btn-group mr-2">
-                        <!--{!! Form::open(['route' => ['institution.destroy', $institution->id], 'method' => 'DELETE']); !!}-->
-                        <!--<button type="submit" class="btn btn-danger">Remover</button>-->
-                        <!--{!! Form::close(); !!}-->
+                        <form v-if="!block_delete_list[item.id]" method="POST" :action="url_delete_list[item.id]" accept-charset="UTF-8">
+                            <input name="_method" type="hidden" value="DELETE">
+                            <input type="hidden" name="_token" :value="csrf">
+                            <button type="submit" class="btn btn-danger">Del</button>
+                        </form>
+                        <a v-else class="btn btn-xs btn-danger disabled" :href="url_edit_list[item.id]">Del</a>
                     </div>
                 </td>
             </tr>
@@ -37,31 +45,30 @@
 
 <script>
     export default {
-        props: ['items'],
+        props: ['items', 'url_delete', 'url_edit', 'url_show', 'block_edit', 'block_delete'],
 
         data () {
             return {
                 list: [],
+                url_delete_list: [],
+                url_edit_list: [],
                 sortProperty: 'title',
                 sortDirection: 'asc',
-                filterTerm: ''
+                filterTerm: '',
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         },
 
         mounted () {
             this.list = JSON.parse(this.items)
+            this.url_delete_list = JSON.parse(this.url_delete)
+            this.url_edit_list = JSON.parse(this.url_edit)
+            this.url_show_list = JSON.parse(this.url_show)
+            this.block_edit_list = JSON.parse(this.block_edit)
+            this.block_delete_list = JSON.parse(this.block_delete)
         },
 
         computed: {
-            orderedItems: function () {
-                return _.orderBy(this.list, this.sortProperty, this.sortDirection)
-            },
-            filteredUsers: function () {
-                var self = this
-                return self.list.filter(function (item) {
-                    return item.title.indexOf(self.filterTerm) !== -1
-                })
-            },
             filteredAndOrderedItems: function () {
                 const filter = this.filterTerm;
                 const clist = _.orderBy(this.list, this.sortProperty, this.sortDirection);
@@ -84,6 +91,9 @@
                 } else {
                     this.sortDirection = 'asc'
                 }
+            },
+            toggle: function (clicked) {
+                window.location.href = this.url_show_list[clicked.id]
             }
         }
     }

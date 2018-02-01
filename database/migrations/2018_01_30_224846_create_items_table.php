@@ -17,10 +17,12 @@ class CreateItemsTable extends Migration
             $table->increments('id');
 
             $table->string('title');
-            $table->string('name')->nullable();
             $table->string('description')->nullable();
+            $table->unsignedInteger('user_id');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

@@ -18,7 +18,7 @@
                 </div>
             </div>
         </div>
-        <h3>Posted by [Name] on {{ $item->created_at }}.</h3>
+        <h3>Posted by {{ $item->user->name }} on {{ $item->created_at }}.</h3>
         <div class="container">
             <div class="row">
                 <div class="col"></div>

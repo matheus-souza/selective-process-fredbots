@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 class ItemController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a home.
      *
      * @return \Illuminate\Http\Response
@@ -24,7 +34,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::with('user')->get();
 
         return view('item.list')->with(compact('items'));
     }
@@ -65,7 +75,7 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        //
+        return view('item.show')->with(compact('item'));
     }
 
     /**
@@ -76,7 +86,7 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        //
+        return view('item.edit')->with(compact('item'));
     }
 
     /**
@@ -88,7 +98,13 @@ class ItemController extends Controller
      */
     public function update(Request $request, Item $item)
     {
-        //
+        try {
+            $item->update($request->all());
+
+            return redirect()->route('item.index')->with(['success' => 'Updated item successfully.']);
+        } catch (\Exception $e) {
+            return redirect()->route('item.index')->with(['error' => 'Error updating item.']);
+        }
     }
 
     /**
@@ -99,6 +115,12 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        //
+        try {
+            $item->delete();
+
+            return redirect()->route('item.index')->with(['success' => 'Deleted item successfully.']);
+        } catch (\Exception $e) {
+            return redirect()->route('item.index')->with(['error' => 'Error deleting item.']);
+        }
     }
 }

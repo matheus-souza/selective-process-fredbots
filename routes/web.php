@@ -11,6 +11,13 @@
 |
 */
 
-Route::get('/', ['uses' => 'ItemController@home', 'as' => 'item.home']);
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
 
 Route::resource('item', 'ItemController');
+Route::get('/home', ['uses' => 'ItemController@home', 'as' => 'item.home']);
+//Route::get('/home', 'HomeController@index')->name('home');
