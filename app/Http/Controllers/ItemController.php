@@ -24,7 +24,52 @@ class ItemController extends Controller
      */
     public function home()
     {
-        return view('item.index');
+        $items = Item::with('user')->get();
+
+        $itemsId = [];
+        $itemsDisplayed = [];
+        foreach ($items as $item) {
+            if (is_null($item->displayed))
+                $itemsDisplayed[] = $item->displayed;
+
+            $itemsId[] = $item->id;
+        }
+
+        if (count(Item::where('displayed', '=', date('Y/m/d'))->get()) == 0) {
+            if (count($itemsDisplayed) > 0) {
+                do {
+                    $randomId = random_int(min($itemsId), max($itemsId));
+                    $randomItem = Item::find($randomId);
+                } while (!is_null($randomItem->displayed));
+
+                if (is_null($randomItem->displayed)) {
+                    $itemDay = $randomItem;
+                    $itemDay->displayed = date('Y/m/d');
+                    $itemDay->save();
+
+                    $itemDay = Item::where('displayed', '=', date('Y/m/d'))->get();
+                    $itemPreviusDay = Item::where('displayed', '=', date('Y/m/d', strtotime("-1 days")))->get();
+                }
+            } else {
+                $randomId = random_int(min($itemsId), max($itemsId));
+                $randomItem = Item::find($randomId);
+
+                $itemDay = $randomItem;
+                $itemDay->displayed = date('Y/m/d');
+                $itemDay->save();
+
+                $itemDay = Item::where('displayed', '=', date('Y/m/d'))->get();
+                $itemPreviusDay = Item::where('displayed', '=', date('Y/m/d', strtotime("-1 days")))->get();
+            }
+        } else {
+            $itemDay = Item::where('displayed', '=', date('Y/m/d'))->get();
+            $itemPreviusDay = Item::where('displayed', '=', date('Y/m/d', strtotime("-1 days")))->get();
+        }
+
+        return view('item.index', [
+            'itemDay' => $itemDay[0],
+            'itemPreviusDay' => $itemPreviusDay[0] ?? null,
+        ]);
     }
 
     /**

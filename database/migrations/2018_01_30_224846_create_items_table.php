@@ -19,6 +19,7 @@ class CreateItemsTable extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->string('image')->nullable();
+            $table->dateTime('displayed')->nullable();
             $table->unsignedInteger('user_id');
             $table->softDeletes();
             $table->timestamps();
