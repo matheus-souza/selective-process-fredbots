@@ -4,8 +4,9 @@
 - Docker e docker-compose
 
 ## Rodando
+- Execute ```cp .env.laradock ./laradock/.env``` na raiz do projeto
 - Execute: ```./run``` na raiz do projeto
-- Acesse o container ```workspace``` com o usuário 'laradock'
+- Acesse o container ```workspace``` com o usuário ```laradock```
 - Execute: ```composer install```
 - Execute: ```npm install```
 - Execute: ```npm run dev```
